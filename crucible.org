@@ -1,9 +1,9 @@
-* registers
+* Registers
 ** s - stack used for evaluations
 ** e - environment used for bound values
 ** c - code to be evaluated
 ** d - stack to store values from the other registers
-* instructions
+* Instructions
 ** Values
 *** (NIL) - Put a nil on the stack
 s e (NIL . c) d -> (NIL . s) e c d
@@ -19,10 +19,23 @@ s e (LD (i . j) . c) d -> (locate((i, j, e) . s) e c d
      locate(1, 1, ((1) (2 3))) -> 3
      locate(_, _, _)           -> error
      
+** Predicates
+*** (EQ)
+Places #t on the top of the stack if the top two values are the
+same, #f otherwise.
+
+*** (ATOMP)
+Places #t on the top of the stack if the top value is an immediate
+value, or a string pointer, #f otherwise.
+
+*** (FNP)
+Places #t on the top of the stack if the top value is a function
+pointer, #f otherwise.
+
 ** Conditional
 *** (SEL ct cf) - Conditionally execute ct or cf depending on the value on the stack
-(T . s) e (SEL ct cf . c) d -> s e ct (c . d)
-(F . s) e (SEL ct cf . c) d -> s e cf (c . d)
+(#t . s) e (SEL ct cf . c) d -> s e ct (c . d)
+(#f . s) e (SEL ct cf . c) d -> s e cf (c . d)
 (_ . s) e (SEL ct cf . c) d -> error
 
 *** (JOIN) - Return to main control after executing conditional branch
@@ -71,3 +84,33 @@ read a sexp x from stdin
 (x . s) e (PRINT . c) d -> s e c d where x is a string
 x will be output to stdout as a sexp
 
+* Memory
+Values are represented in memory as tagged pointers. By allocating on
+8-byte boundaries, we can get three low-order bits to play around
+with.
+** References
+*** x00 - Fixnum
+*** x10 - Other Immediate (e.g. nil, true, false, characters, etc.)
+**** 0010 - 0x02 - NIL
+**** 1010 - 0x0A - #f
+**** 1110 - 0x0E - #t
+
+*** xx1 - Pointer
+**** 001 - Cons
+**** 011 - Function
+The actual object is just a cons cell (body . env), but it avoids an
+memory access to test if the object is a function.
+**** 101 - String
+**** 111 - Other
+** Objects in Memory
+All objects in memory begin with a tag byte.
+
+*** 0x01 - Cons
+[0x01 | 8 bytes for car | 8 bytes for cdr]
+
+*** 0x05 - String
+[0x05 | 4 bytes for size | size bytes for string]]
+
+** Garbage Collection
+Cheney copying collector, with the registers as roots. If it must grow
+the amount of RAM available, it allocates a page twice as big.
