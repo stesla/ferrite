@@ -8,7 +8,7 @@
 
 int main(int argc, char **argv) {
   fe_read(stdin);
-  vm.c = vm.s, vm.s = NIL;
+  vm.c = CONS(vm.s)->car, vm.s = NIL;
   fe_eval();
   return 0;
 }

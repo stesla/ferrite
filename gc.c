@@ -1,23 +1,33 @@
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "gc.h"
 #include "error.h"
 
-/* static void *gc_alloc(size_t bytes) { */
-/*   return NULL; */
-/* } */
+#define ALIGNED_SIZE(size) (((size) + LOWTAG_MASK) & ~LOWTAG_MASK)
+
+static void *gc_alloc(size_t bytes) {
+  void *result;
+  if ((result = malloc(ALIGNED_SIZE(bytes))) == NULL) {
+    fprintf(stderr, "out of memory");
+    abort();
+  }
+  return result;
+}
+
+static inline ref_t make_ref(void *obj, uint8_t lowtag) {
+  return ((ref_t) obj) + lowtag;
+}
+
+ref_t gc_lookup(ref_t old) {
+  return old;
+}
 
 ref_t make_cons() {
-  return NIL;
-}
-
-ref_t get_cdr() {
-  return NIL;
-}
-
-void set_car(ref_t c, ref_t x) {
-}
-
-void set_cdr(ref_t c, ref_t x) {
+  struct cons *obj = gc_alloc(sizeof(struct cons));
+  obj->tag = OBJ_CONS;
+  obj->car = obj->cdr = NIL;
+  return make_ref(obj, LOWTAG_CONS);
 }
 
 #define FIXNUM_MAX  536870911
@@ -31,5 +41,8 @@ ref_t make_fixnum(int i) {
 }
 
 ref_t make_string(char *s) {
-  return NIL;
+  struct string *obj = gc_alloc(sizeof(struct string) + strlen(s));
+  obj->tag = OBJ_STRING;
+  strcpy(obj->bytes, s);
+  return make_ref(obj, LOWTAG_STRING);
 }

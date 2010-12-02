@@ -3,18 +3,18 @@
 #include "vm.h"
 
 void fe_read(FILE *in) {
-  vm_push(PRINT);
+  while (!feof(in))
+    fgetc(in);
+  vm_push_s(PRINT);
   vm_cons();
-  vm_push(PRINT);
+  vm_push_s(CONS);
   vm_cons();
-  vm_push(CONS);
+  vm_push_s(make_fixnum(42));
   vm_cons();
-  vm_push(make_fixnum(42));
+  vm_push_s(LDC);
   vm_cons();
-  vm_push(LDC);
+  vm_push_s(make_string("hello world"));
   vm_cons();
-  vm_push(make_string("hello world"));
-  vm_cons();
-  vm_push(LDC);
+  vm_push_s(LDC);
   vm_cons();
 }

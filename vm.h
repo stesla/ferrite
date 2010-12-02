@@ -9,8 +9,12 @@ struct vm {
 
 struct vm vm;
 
-ref_t vm_pop();
-void vm_push(ref_t ref);
+ref_t vm_pop_c();
+ref_t vm_pop_s();
+void vm_push_c(ref_t ref);
+void vm_push_s(ref_t ref);
 void vm_cons();
+void vm_ldc();
+void vm_print();
 
 #endif

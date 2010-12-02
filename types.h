@@ -4,9 +4,9 @@
 #include <inttypes.h>
 #include <sys/types.h>
 
-typedef long ref_t;
+typedef unsigned long ref_t;
 
-#define NIL 0x03
+#define NIL 0x02
 #define TRUE 0x0A
 #define FALSE 0x0E
 
