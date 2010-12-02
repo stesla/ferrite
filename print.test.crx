@@ -1,0 +1,5 @@
+(LDC "hello world" PRINT)
+
+RESULT
+
+hello world
