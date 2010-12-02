@@ -28,10 +28,6 @@ same, #f otherwise.
 Places #t on the top of the stack if the top value is an immediate
 value, or a string pointer, #f otherwise.
 
-*** (FNP)
-Places #t on the top of the stack if the top value is a function
-pointer, #f otherwise.
-
 ** Conditional
 *** (SEL ct cf) - Conditionally execute ct or cf depending on the value on the stack
 (#t . s) e (SEL ct cf . c) d -> s e ct (c . d)
@@ -91,7 +87,8 @@ with.
 ** References
 *** x00 - Fixnum
 *** x10 - Other Immediate (e.g. nil, true, false, characters, etc.)
-**** 0010 - 0x02 - NIL
+**** x10010 - Op Code (see types.h)
+**** 0110 - 0x03 - NIL
 **** 1010 - 0x0A - #f
 **** 1110 - 0x0E - #t
 
