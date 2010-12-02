@@ -6,12 +6,6 @@
 
 typedef long ref_t;
 
-struct vm {
-  ref_t s, e, c, d;
-};
-
-struct vm vm;
-
 #define NIL 0x03
 #define TRUE 0x0A
 #define FALSE 0x0E
@@ -52,4 +46,4 @@ typedef enum {
   RTN = 0x292
 } op_code;
 
-#endif TYPES_H
+#endif
