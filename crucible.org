@@ -1,0 +1,73 @@
+* registers
+** s - stack used for evaluations
+** e - environment used for bound values
+** c - code to be evaluated
+** d - stack to store values from the other registers
+* instructions
+** Values
+*** (NIL) - Put a nil on the stack
+s e (NIL . c) d -> (NIL . s) e c d
+
+*** (LDC k) - Put a constant on the stack
+s e (LDC k . c) d -> (k . s) e c d
+
+*** (LD (i . j)) - Put the jth value of the ith list in e on the stack
+s e (LD (i . j) . c) d -> (locate((i, j, e) . s) e c d
+
+**** locate :: Int -> Int -> ((Int))
+     locate(0, 0, ((1))        -> 1
+     locate(1, 1, ((1) (2 3))) -> 3
+     locate(_, _, _)           -> error
+     
+** Conditional
+*** (SEL ct cf) - Conditionally execute ct or cf depending on the value on the stack
+(T . s) e (SEL ct cf . c) d -> s e ct (c . d)
+(F . s) e (SEL ct cf . c) d -> s e cf (c . d)
+(_ . s) e (SEL ct cf . c) d -> error
+
+*** (JOIN) - Return to main control after executing conditional branch
+s e (JOIN) (c . d) -> s e c d
+** Function Application
+*** (LDF f) - Put the compiled function f on the stack with its closure
+s e (LDF f . c) d -> ((f . e) . s) e c d
+
+*** (AP) - Apply a function
+((f . e') v . s) e (AP . c) d -> NIL e' f (s e c . d)
+
+*** (RTN) - Return from a function application
+(x . s) e (RTN . c) (s' e' c' . d) -> (x . s') e' c' d
+
+** List Structure
+*** (CONS) - Create a cons cell
+(x y . s) e (CONS . c) d -> ((x . y) . s) e c d
+
+*** (CAR) - Get the first value in a cons cell
+((x . y) . s) e (CAR . c) d -> (x . s) e c d
+
+*** (CDR) - Get the second value in a cons cell
+((x . y) . s) e (CDR . c) d -> (y . s) e c d
+
+** Math
+Each of these works like this:
+(y x . s) e (OP . c) d -> (z . s) e c d where z = x OP y
+*** (ADD)
+*** (SUB)
+*** (MUL)
+*** (DIV)
+** I/O
+*** (GET)
+s e (GET . c) d -> (x . s) e c d
+read a single character x from stdin
+
+*** (PUT)
+(x . s) e (PUT . c) d -> s e c d where x is a character
+x will be output to stdout
+
+*** (READ)
+s e (READ . c) d -> (x . s) e c d
+read a sexp x from stdin
+
+*** (PRINT)
+(x . s) e (PRINT . c) d -> s e c d where x is a string
+x will be output to stdout as a sexp
+
