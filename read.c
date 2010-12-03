@@ -105,6 +105,14 @@ void read_atom() {
     read_identifier();
 }
 
+void read_comment() {
+  char ch = CHAR(car(vm.s));
+  while(ch != '\n')
+    ch = read_byte();
+  vm_pop_s();
+  read_sexp();
+}
+
 static void read_sexp() {
   char ch = read_byte();
   while (isspace(ch)) {
@@ -112,7 +120,9 @@ static void read_sexp() {
     ch = read_byte();
   }
 
-  if (ch == '(')
+  if (ch == ';')
+    read_comment();
+  else if (ch == '(')
     read_list();
   else if (ch == EOF) {
     ref_t s = vm.s;
