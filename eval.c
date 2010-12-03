@@ -3,35 +3,11 @@
 #include "eval.h"
 #include "vm.h"
 
-void fe_eval_instruction() {
-  ref_t inst = vm_pop_c();
-  switch (inst) {
-  case NIL:
-    vm_nil();
-    break;
-
-  case OP_LD:
-    vm_ld();
-    break;
-
-  case OP_LDC:
-    vm_ldc();
-    break;
-
-  case OP_CONS:
-    vm_cons();
-    break;
-
-  case OP_PRINT:
-    vm_print();
-    break;
-
-  default:
-    error("unknown instruction: 0x%lx", inst);
-  }
-}
-
 void fe_eval() {
+  vm_save_sec();
+  vm.c = vm_pop_s();
+  vm.s = NIL;
   while (vm.c != NIL)
-    fe_eval_instruction();
+    vm_do(vm_pop_c());
+  vm_rtn();
 }

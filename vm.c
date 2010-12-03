@@ -194,3 +194,32 @@ void vm_ld() {
     error("invalid environment location");
   vm_push_s(locate(FIXNUM(car(loc)), FIXNUM(cdr(loc))));
 }
+
+void vm_do(ref_t opcode) {
+  switch (opcode) {
+  case NIL: vm_nil(); break;
+  case OP_LD: vm_ld(); break;
+  case OP_LDC: vm_ldc(); break;
+  case OP_CONS: vm_cons(); break;
+  case OP_PRINT: vm_print(); break;
+  case OP_LDF:
+  case OP_EQ:
+  case OP_ATOMP:
+  case OP_RCONS:
+  case OP_CAR:
+  case OP_CDR:
+  case OP_ADD:
+  case OP_SUB:
+  case OP_MUL:
+  case OP_DIV:
+  case OP_GET:
+  case OP_PUT:
+  case OP_READ:
+  case OP_SEL:
+  case OP_JOIN:
+  case OP_AP:
+  case OP_RTN:
+  default:
+    error("unsupported opcode: 0x%lX", opcode);
+  }
+}
