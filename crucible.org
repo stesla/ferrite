@@ -28,10 +28,6 @@ same, #f otherwise.
 Places #t on the top of the stack if the top value is an immediate
 value, or a string pointer, #f otherwise.
 
-*** (FNP)
-Places #t on the top of the stack if the top value is a function
-pointer, #f otherwise.
-
 ** Conditional
 *** (SEL ct cf) - Conditionally execute ct or cf depending on the value on the stack
 (#t . s) e (SEL ct cf . c) d -> s e ct (c . d)
@@ -69,20 +65,20 @@ Each of these works like this:
 *** (DIV)
 ** I/O
 *** (GET)
-s e (GET . c) d -> (x . s) e c d
-read a single character x from stdin
+(f . s) e (GET . c) d -> (x . s) e c d
+read a single character x from the file descriptor f
 
 *** (PUT)
-(x . s) e (PUT . c) d -> s e c d where x is a character
-x will be output to stdout
+(f x . s) e (PUT . c) d -> s e c d where x is a character
+x will be output to file descriptor f
 
 *** (READ)
-s e (READ . c) d -> (x . s) e c d
-read a sexp x from stdin
+(f . s) e (READ . c) d -> (x . s) e c d
+read a sexp x from file descriptor f
 
 *** (PRINT)
-(x . s) e (PRINT . c) d -> s e c d where x is a string
-x will be output to stdout as a sexp
+(f x . s) e (PRINT . c) d -> s e c d where x is a string
+x will be output to file descriptor f as a sexp
 
 * Memory
 Values are represented in memory as tagged pointers. By allocating on
@@ -91,6 +87,16 @@ with.
 ** References
 *** x00 - Fixnum
 *** x10 - Other Immediate (e.g. nil, true, false, characters, etc.)
+**** x 0001 0010 - Op Code (see types.h)
+**** x 0010 0010 - ASCII character (next byte holds character)
+**** x 0011 0010 - non-parse-able values
+***** 0x32 - READ_BYTE (read.c)
+This is used by the parser to indicate that the next value on the
+stack should be read as if it had come from the input. The parser
+pushes this onto the stack after its read an identifier or a number
+(because it only knows to stop reading those when it finds the first
+character that isn't one of those);
+
 **** 0010 - 0x02 - NIL
 **** 1010 - 0x0A - #f
 **** 1110 - 0x0E - #t
