@@ -1,3 +1,4 @@
+()
 (LDC "hello world" LDC 42 CONS PRINT)
 
 RESULT

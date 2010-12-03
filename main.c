@@ -7,7 +7,11 @@
 
 int main(int argc, char **argv) {
   fe_read();
-  vm.c = vm_pop_s(), vm.s = NIL;
+  vm.e = vm_pop_s();
+
+  fe_read();
+  vm.c = vm_pop_s();
+
   fe_eval();
   return 0;
 }
