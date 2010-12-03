@@ -27,7 +27,7 @@ static void read_sexp();
 #define LIST_END   0x2922 /* ref encoded ')' */
 #define LIST_DOT   0x2E22 /* ref encoded '.' */
 
-void read_list() {
+static void read_list() {
   while (car(vm.s) != LIST_END)
     read_sexp();
   vm_pop_s();
@@ -55,7 +55,7 @@ static void build_string(size_t size) {
   }
 }
 
-void read_string() {
+static void read_string() {
   char ch;
   size_t size = 0;
   vm_pop_s(); /* get rid of open quote */
@@ -67,7 +67,7 @@ void read_string() {
   build_string(size);
 }
 
-void read_number() {
+static void read_number() {
   char ch;
   size_t size = 1; /* the top of the stack has our first digit */
   ch = read_byte();
@@ -81,7 +81,7 @@ void read_number() {
   vm_push_s(READ_BYTE);
 }
 
-void read_identifier() {
+static void read_identifier() {
   char ch;
   size_t size = 1; /* the top of the stack has our first char */
   ch = read_byte();
@@ -95,7 +95,7 @@ void read_identifier() {
   vm_push_s(READ_BYTE);
 }
 
-void read_atom() {
+static void read_atom() {
   char ch = CHAR(car(vm.s));
   if (ch == '"')
     read_string();
@@ -105,7 +105,7 @@ void read_atom() {
     read_identifier();
 }
 
-void read_comment() {
+static void read_comment() {
   char ch = CHAR(car(vm.s));
   while(ch != '\n')
     ch = read_byte();
