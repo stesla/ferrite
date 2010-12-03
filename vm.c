@@ -1,6 +1,10 @@
+#include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include "gc.h"
 #include "vm.h"
+#include "object.h"
 
 struct vm vm = {NIL, NIL, NIL, NIL};
 
@@ -8,8 +12,8 @@ static ref_t vm_pop(ref_t *r) {
   ref_t result;
   if (*r == NIL)
     return NIL;
-  result = CONS(*r)->car;
-  *r = CONS(*r)->cdr;
+  result = car(*r);
+  *r = cdr(*r);
   return result;
 }
 
@@ -21,9 +25,34 @@ static void vm_push(ref_t *r, ref_t ref) {
 }
 
 ref_t vm_pop_c() { return vm_pop(&vm.c); }
+ref_t vm_pop_d() { return vm_pop(&vm.d); }
 ref_t vm_pop_s() { return vm_pop(&vm.s); }
 void vm_push_c(ref_t ref) { vm_push(&vm.c, ref); }
+void vm_push_d(ref_t ref) { vm_push(&vm.d, ref); }
 void vm_push_s(ref_t ref) { vm_push(&vm.s, ref); }
+
+void vm_save_sec() {
+  vm_push_d(vm.c);
+  vm_push_d(vm.e);
+  vm_push_d(vm.s);
+}
+
+void vm_get() {
+  ref_t f = vm_pop_s();
+  int fd = fixnum_to_int(f);
+  char ch;
+  switch (read(fd, &ch, 1)) {
+  case 1:
+    vm_push_s(make_char(ch));
+    break;
+  case 0:
+    vm_push_s(make_char(EOF));
+    break;
+  default:
+    perror("vm_get");
+    exit(1);
+  }
+}
 
 void vm_cons() {
   ref_t cell = make_cons();
@@ -33,41 +62,24 @@ void vm_cons() {
 }
 
 void vm_ldc() {
-  vm_push_s(CONS(vm.c)->car);
+  vm_push_s(car(vm.c));
   vm_pop_c();
-}
-
-typedef enum {
-  NO = 0,
-  YES = 1
-} bool;
-
-static inline bool nilp(ref_t value) { return value == NIL; }
-
-static inline bool fixnump(ref_t value) {
-  return (value & LOWTAG_MASK) == LOWTAG_FIXNUM;
-}
-
-static inline bool stringp(ref_t value) {
-  return (value & LOWTAG_MASK) == LOWTAG_STRING;
-}
-
-static inline bool consp(ref_t value) {
-  return (value & LOWTAG_MASK) == LOWTAG_CONS;
 }
 
 static void print(ref_t value) {
   if (nilp(value))
     printf("NIL");
+  else if(charp(value))
+    printf("$%c", CHAR(value));
   else if(fixnump(value))
     printf("%d", FIXNUM(value));
   else if(stringp(value))
     printf("\"%s\"", STRING(value)->bytes);
   else if(consp(value)) {
     printf("(");
-    print(CONS(value)->car);
+    print(car(value));
     printf(" . ");
-    print(CONS(value)->cdr);
+    print(cdr(value));
     printf(")");
   }
 }
@@ -75,4 +87,13 @@ static void print(ref_t value) {
 void vm_print() {
   ref_t value = vm_pop_s();
   print(value);
+}
+
+void vm_rtn() {
+  if (nilp(vm.s))
+    vm.s = vm_pop_d();
+  else
+    CONS(vm.s)->cdr = vm_pop_d();
+  vm.e = vm_pop_d();
+  vm.c = vm_pop_d();
 }

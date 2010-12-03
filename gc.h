@@ -11,6 +11,11 @@ enum {
   LOWTAG_STRING = 0x05
 };
 
+#define TAG_MASK 0xFF
+enum {
+  TAG_CHAR = 0x22
+};
+
 enum {
   OBJ_CONS = 0x01,
   OBJ_STRING = 0x05
@@ -30,6 +35,7 @@ struct string {
   char bytes[1];
 };
 
+#define CHAR(obj) ((char) (obj >> 8))
 #define CONS(obj) ((struct cons *) ((obj) - LOWTAG_CONS))
 #define FIXNUM(obj) (((int32_t) (obj)) >> 2)
 #define STRING(obj) ((struct string *) ((obj) - LOWTAG_STRING))
@@ -37,12 +43,8 @@ struct string {
 ref_t gc_lookup(ref_t old);
 
 ref_t make_cons();
+ref_t make_char(char c);
 ref_t make_fixnum(int i);
 ref_t make_string(char *s);
-
-ref_t get_car(ref_t c);
-ref_t get_cdr(ref_t c);
-void set_car(ref_t c, ref_t x);
-void set_cdr(ref_t c, ref_t x);
 
 #endif

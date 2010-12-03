@@ -6,16 +6,16 @@
 void fe_eval_instruction() {
   ref_t inst = vm_pop_c();
   switch (inst) {
-  case LDC: {
+  case OP_LDC: {
     vm_ldc();
     break;
   }
 
-  case CONS:
+  case OP_CONS:
     vm_cons();
     break;
 
-  case PRINT: {
+  case OP_PRINT: {
     vm_print();
     break;
   }

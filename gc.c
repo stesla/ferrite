@@ -23,6 +23,10 @@ ref_t gc_lookup(ref_t old) {
   return old;
 }
 
+ref_t make_char(char c) {
+  return (((ref_t) c) << 8) + TAG_CHAR;
+}
+
 ref_t make_cons() {
   struct cons *obj = gc_alloc(sizeof(struct cons));
   obj->tag = OBJ_CONS;

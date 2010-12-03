@@ -2,7 +2,7 @@ PROGRAM=fe
 
 CC=gcc
 
-OBJS=main.o gc.o eval.o read.o error.o vm.o
+OBJS=main.o gc.o eval.o read.o error.o vm.o object.o
 
 CFLAGS=-g -Wall
 
