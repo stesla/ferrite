@@ -113,6 +113,14 @@ void read_comment() {
   read_sexp();
 }
 
+static void check_eof_in_list() {
+  ref_t s = vm.s;
+  while (car(s) != LIST_START && !nilp(cdr(s)))
+    s = cdr(s);
+  if (car(s) == LIST_START)
+    error("end of file reached before end of list");
+}
+
 static void read_sexp() {
   char ch = read_byte();
   while (isspace(ch)) {
@@ -124,13 +132,8 @@ static void read_sexp() {
     read_comment();
   else if (ch == '(')
     read_list();
-  else if (ch == EOF) {
-    ref_t s = vm.s;
-    while (car(s) != LIST_START && !nilp(cdr(s)))
-      s = cdr(s);
-    if (car(s) == LIST_START)
-      error("end of file reached before end of list");
-  }
+  else if (ch == EOF)
+    check_eof_in_list();
   else if (ch != ')')
     read_atom();
 }
