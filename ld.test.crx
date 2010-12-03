@@ -1,0 +1,6 @@
+((6 7) (42))
+(NIL LD (2.1) CONS LD (1.2) CONS PRINT)
+
+RESULT
+
+(7 42)

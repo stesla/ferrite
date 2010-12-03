@@ -168,4 +168,29 @@ void vm_rtn() {
   vm.c = vm_pop_d();
 }
 
-void vm_nil() { vm_push_s(NIL); }
+void vm_nil() {
+  vm_push_s(NIL);
+}
+
+static ref_t locate(int list, int item) {
+  int i, j;
+  /* find the jth item in the ith list in vm.e */
+  ref_t e = vm.e;
+  for (i = list; i > 1; i--)
+    e = cdr(e);
+  if (nilp(e))
+    error("invalid lookup list index %d", list);
+  e = car(e);
+  for (j = item; j > 1; j--)
+    e = cdr(e);
+  if (nilp(e))
+    error("invalid lookup item index %d", item);
+  return car(e);
+}
+
+void vm_ld() {
+  ref_t loc = vm_pop_c();
+  if (!(consp(loc) && fixnump(car(loc)) && fixnump(cdr(loc))))
+    error("invalid environment location");
+  vm_push_s(locate(FIXNUM(car(loc)), FIXNUM(cdr(loc))));
+}

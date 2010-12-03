@@ -25,14 +25,24 @@ static void read_sexp();
 
 #define LIST_START 0x2822 /* ref encoded '(' */
 #define LIST_END   0x2922 /* ref encoded ')' */
+#define LIST_DOT   0x2E22 /* ref encoded '.' */
 
 void read_list() {
   while (car(vm.s) != LIST_END)
     read_sexp();
   vm_pop_s();
-  vm_nil(); /* end of list */
-  while(car(cdr(vm.s)) != LIST_START)
+  if (car(vm.s) == LIST_DOT)
+    error("invalid use of list dot notation");
+  if (car(cdr(vm.s)) != LIST_DOT)
+    vm_nil();
+  else
+    /* get rid of the LIST_DOT */
+    CONS(vm.s)->cdr = cdr(cdr(vm.s));
+  while(car(cdr(vm.s)) != LIST_START) {
+    if (car(cdr(vm.s)) == LIST_DOT)
+      error("invalid use of list dot notation");
     vm_rcons();
+  }
   /* get rid of the LIST_START */
   CONS(vm.s)->cdr = cdr(cdr(vm.s));
 }

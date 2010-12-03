@@ -56,6 +56,7 @@ void vm_save_sec();
 void vm_cons();
 void vm_rcons();
 void vm_get();
+void vm_ld();
 void vm_ldc();
 void vm_print();
 void vm_rtn();
