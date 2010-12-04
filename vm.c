@@ -210,6 +210,24 @@ static void vm_add() {
   vm_push_s(x + y);
 }
 
+static void vm_sub() {
+  ref_t x = vm_pop_s(), y = vm_pop_s();
+  check_fixnum(x, y);
+  vm_push_s(x - y);
+}
+
+static void vm_mul() {
+  ref_t x = vm_pop_s(), y = vm_pop_s();
+  check_fixnum(x, y);
+  vm_push_s(make_fixnum(FIXNUM(x) * FIXNUM(y)));
+}
+
+static void vm_div() {
+  ref_t x = vm_pop_s(), y = vm_pop_s();
+  check_fixnum(x, y);
+  vm_push_s(make_fixnum(FIXNUM(x) / FIXNUM(y)));
+}
+
 ref_t vm_op(const char *name) {
   size_t i = 0;
   while (ops[i].token != NULL) {
@@ -227,26 +245,26 @@ void vm_do(ref_t opcode) {
   case OP_ADD: vm_add(); break;
   case OP_AP: vm_ap(); break;
   case OP_CONS: vm_cons(); break;
+  case OP_DIV: vm_div(); break;
   case OP_GET: vm_get(); break;
   case OP_LD: vm_ld(); break;
   case OP_LDC: vm_ldc(); break;
   case OP_LDF: vm_ldf(); break;
+  case OP_MUL: vm_mul(); break;
   case OP_PRINT: vm_print(); break;
   case OP_RCONS: vm_rcons(); break;
   case OP_RTN: vm_rtn(); break;
   case OP_SAVE: vm_save(); break;
+  case OP_SUB: vm_sub(); break;
 
   case OP_ATOMP:
   case OP_CAR:
   case OP_CDR:
-  case OP_DIV:
   case OP_EQ:
   case OP_JOIN:
-  case OP_MUL:
   case OP_PUT:
   case OP_READ:
   case OP_SEL:
-  case OP_SUB:
   default:
     error("unsupported opcode: 0x%.4lX", opcode);
   }
