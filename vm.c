@@ -75,6 +75,16 @@ static void vm_ldc() {
   vm_pop_c();
 }
 
+static void vm_nil() {
+  vm_push_s(NIL);
+}
+
+static void vm_ldf() {
+  vm_nil(); /* allocate our storage */
+  ref_t cell = CONS(vm.s)->car = make_cons();
+  CONS(cell)->car = vm_pop_c();
+  CONS(cell)->cdr = vm.e;
+}
 
 static struct {
   const char *token;
@@ -157,10 +167,6 @@ static void vm_rtn() {
   vm.c = vm_pop_d();
 }
 
-static void vm_nil() {
-  vm_push_s(NIL);
-}
-
 static ref_t locate(int list, int item) {
   int i, j;
   /* find the jth item in the ith list in vm.e */
@@ -184,6 +190,26 @@ static void vm_ld() {
   vm_push_s(locate(FIXNUM(car(loc)), FIXNUM(cdr(loc))));
 }
 
+static void vm_ap() {
+  vm_save();
+  vm.e = make_cons();
+  CONS(vm.e)->car = car(cdr(vm.s));
+  CONS(vm.e)->cdr = cdr(car(vm.s));
+  vm.c = car(car(vm.s));
+  vm.s = NIL;
+}
+
+static void check_fixnum(ref_t x, ref_t y) {
+  if (!(fixnump(x) && fixnump(y)))
+    error("arguments must be fixnums");
+}
+
+static void vm_add() {
+  ref_t x = vm_pop_s(), y = vm_pop_s();
+  check_fixnum(x, y);
+  vm_push_s(x + y);
+}
+
 ref_t vm_op(const char *name) {
   size_t i = 0;
   while (ops[i].token != NULL) {
@@ -198,30 +224,30 @@ ref_t vm_op(const char *name) {
 void vm_do(ref_t opcode) {
   switch (opcode) {
   case NIL: vm_nil(); break;
+  case OP_ADD: vm_add(); break;
+  case OP_AP: vm_ap(); break;
   case OP_CONS: vm_cons(); break;
   case OP_GET: vm_get(); break;
   case OP_LD: vm_ld(); break;
   case OP_LDC: vm_ldc(); break;
+  case OP_LDF: vm_ldf(); break;
   case OP_PRINT: vm_print(); break;
   case OP_RCONS: vm_rcons(); break;
   case OP_RTN: vm_rtn(); break;
   case OP_SAVE: vm_save(); break;
 
-  case OP_ADD:
-  case OP_AP:
   case OP_ATOMP:
   case OP_CAR:
   case OP_CDR:
   case OP_DIV:
   case OP_EQ:
   case OP_JOIN:
-  case OP_LDF:
   case OP_MUL:
   case OP_PUT:
   case OP_READ:
   case OP_SEL:
   case OP_SUB:
   default:
-    error("unsupported opcode: 0x%lX", opcode);
+    error("unsupported opcode: 0x%.4lX", opcode);
   }
 }

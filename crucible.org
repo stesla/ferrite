@@ -41,7 +41,7 @@ s e (JOIN) (c . d) -> s e c d
 s e (LDF f . c) d -> ((f . e) . s) e c d
 
 *** (AP) - Apply a function
-((f . e') v . s) e (AP . c) d -> NIL e' f (s e c . d)
+((f . e') v . s) e (AP . c) d -> NIL (v . e') f (s e c . d)
 
 *** (RTN) - Return from a function application
 (x . s) e (RTN . c) (s' e' c' . d) -> (x . s') e' c' d
