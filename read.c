@@ -16,7 +16,7 @@ static char read_byte() {
     vm_pop_s();
   else {
     vm_push_s(make_fixnum(STDIN_FILENO));
-    vm_get();
+    vm_do(OP_GET);
   }
   return CHAR(car(vm.s));
 }
@@ -34,14 +34,14 @@ static void read_list() {
   if (car(vm.s) == LIST_DOT)
     error("invalid use of list dot notation");
   if (car(cdr(vm.s)) != LIST_DOT)
-    vm_nil();
+    vm_do(NIL);
   else
     /* get rid of the LIST_DOT */
     CONS(vm.s)->cdr = cdr(cdr(vm.s));
   while(car(cdr(vm.s)) != LIST_START) {
     if (car(cdr(vm.s)) == LIST_DOT)
       error("invalid use of list dot notation");
-    vm_rcons();
+    vm_do(OP_RCONS);
   }
   /* get rid of the LIST_START */
   CONS(vm.s)->cdr = cdr(cdr(vm.s));
@@ -90,7 +90,7 @@ static void read_identifier() {
     size++;
   }
   build_string(size);
-  CONS(vm.s)->car = vm_op_with_name(STRING(car(vm.s))->bytes);
+  CONS(vm.s)->car = vm_op(STRING(car(vm.s))->bytes);
   vm_push_s(make_char(ch));
   vm_push_s(READ_BYTE);
 }
@@ -142,5 +142,5 @@ void fe_read() {
   vm_save_sec();
   vm.s = NIL;
   read_sexp();
-  vm_rtn();
+  vm_do(OP_RTN);
 }

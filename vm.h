@@ -49,21 +49,14 @@ typedef enum {
 ref_t vm_pop_c();
 ref_t vm_pop_d();
 ref_t vm_pop_s();
+
 void vm_push_c(ref_t ref);
 void vm_push_d(ref_t ref);
 void vm_push_s(ref_t ref);
+
 void vm_save_sec();
-void vm_cons();
-void vm_rcons();
-void vm_get();
-void vm_ld();
-void vm_ldc();
-void vm_print();
-void vm_rtn();
-void vm_nil();
 
-ref_t vm_op_with_name(const char *name);
-
+ref_t vm_op(const char *name);
 void vm_do(ref_t opcode);
 
 #endif

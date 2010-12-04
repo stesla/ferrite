@@ -9,5 +9,5 @@ void fe_eval() {
   vm.s = NIL;
   while (vm.c != NIL)
     vm_do(vm_pop_c());
-  vm_rtn();
+  vm_do(OP_RTN);
 }
