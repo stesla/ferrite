@@ -3,13 +3,21 @@ NIL
 
 ;; Code
 (NIL
+
+ ;; Integer Division (order matters)
  LDC 9 LDC 3 DIV CONS
  LDC 3 LDC 9 DIV CONS
+
+ ;; Multiplication (order does not matter)
  LDC 6 LDC 7 MUL CONS
+ LDC 7 LDC 6 MUL CONS
+
+ ;; Subtraction (order matters)
  LDC 6 LDC 4 SUB CONS
  LDC 4 LDC 6 SUB CONS
+
  PRINT)
 
 RESULT
 
-(2 -2 42 3 0)
+(2 -2 42 42 3 0)

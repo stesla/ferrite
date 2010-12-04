@@ -107,8 +107,10 @@ static void read_atom() {
 
 static void read_comment() {
   char ch = CHAR(car(vm.s));
-  while(ch != '\n')
+  while(ch != '\n') {
+    vm_pop_s();
     ch = read_byte();
+  }
   vm_pop_s();
   read_sexp();
 }
