@@ -139,7 +139,7 @@ static void read_sexp() {
 }
 
 void fe_read() {
-  vm_save_sec();
+  vm_do(OP_SAVE);
   vm.s = NIL;
   read_sexp();
   vm_do(OP_RTN);

@@ -33,7 +33,7 @@ void vm_push_c(ref_t ref) { vm_push(&vm.c, ref); }
 void vm_push_d(ref_t ref) { vm_push(&vm.d, ref); }
 void vm_push_s(ref_t ref) { vm_push(&vm.s, ref); }
 
-void vm_save_sec() {
+static void vm_save() {
   vm_push_d(vm.c);
   vm_push_d(vm.e);
   vm_push_d(vm.s);
@@ -205,6 +205,7 @@ void vm_do(ref_t opcode) {
   case OP_PRINT: vm_print(); break;
   case OP_RCONS: vm_rcons(); break;
   case OP_RTN: vm_rtn(); break;
+  case OP_SAVE: vm_save(); break;
 
   case OP_ADD:
   case OP_AP:

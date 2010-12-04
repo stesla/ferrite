@@ -42,8 +42,9 @@ typedef enum {
   OP_JOIN = 0x1312,
 
   /* function application */
-  OP_AP = 0x1412,
-  OP_RTN = 0x1512
+  OP_SAVE = 0x1412,
+  OP_AP = 0x1512,
+  OP_RTN = 0x1612
 } op_code;
 
 ref_t vm_pop_c();
@@ -53,8 +54,6 @@ ref_t vm_pop_s();
 void vm_push_c(ref_t ref);
 void vm_push_d(ref_t ref);
 void vm_push_s(ref_t ref);
-
-void vm_save_sec();
 
 ref_t vm_op(const char *name);
 void vm_do(ref_t opcode);
