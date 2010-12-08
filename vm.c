@@ -56,6 +56,18 @@ static void vm_get() {
   }
 }
 
+static void vm_put() {
+  ref_t f = vm_pop_s();
+  int fd = fixnum_to_int(f);
+  ref_t value = vm_pop_s();
+  if (charp(value)) {
+    char ch = CHAR(value);
+    /* TODO: decide on error conditions */
+    if (write(fd, &ch, 1) != 1)
+      error("error in PUT");
+  }
+}
+
 static void vm_cons() {
   ref_t cell = make_cons();
   CONS(cell)->car = vm_pop_s();
@@ -129,8 +141,13 @@ static const char *vm_opcode_name(ref_t value) {
 static void print(ref_t value) {
   if (nilp(value))
     printf("NIL");
-  else if(charp(value))
-    printf("$%c", CHAR(value));
+  else if(charp(value)) {
+    char ch = CHAR(value);
+    if (0x20 < ch && ch < 0x7F)
+      printf("#\\%c", ch);
+    else
+      printf("#\\x%.2X", (int) ch);
+  }
   else if(fixnump(value))
     printf("%d", FIXNUM(value));
   else if(stringp(value))
@@ -252,6 +269,7 @@ void vm_do(ref_t opcode) {
   case OP_LDF: vm_ldf(); break;
   case OP_MUL: vm_mul(); break;
   case OP_PRINT: vm_print(); break;
+  case OP_PUT: vm_put(); break;
   case OP_RCONS: vm_rcons(); break;
   case OP_RTN: vm_rtn(); break;
   case OP_SAVE: vm_save(); break;
@@ -262,7 +280,6 @@ void vm_do(ref_t opcode) {
   case OP_CDR:
   case OP_EQ:
   case OP_JOIN:
-  case OP_PUT:
   case OP_READ:
   case OP_SEL:
   default:

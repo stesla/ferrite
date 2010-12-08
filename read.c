@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,9 +24,11 @@ static char read_byte() {
 
 static void read_sexp();
 
-#define LIST_START 0x2822 /* ref encoded '(' */
-#define LIST_END   0x2922 /* ref encoded ')' */
-#define LIST_DOT   0x2E22 /* ref encoded '.' */
+#define LIST_START 0x2822 /* '(' */
+#define LIST_END   0x2922 /* ')' */
+#define LIST_DOT   0x2E22 /* '.' */
+#define BEGIN_OCT  0x3022 /* '0' */
+#define BEGIN_HEX  0x7822 /* 'x' */
 
 static void read_list() {
   while (car(vm.s) != LIST_END)
@@ -123,6 +126,35 @@ static void check_eof_in_list() {
     error("end of file reached before end of list");
 }
 
+static void read_special() {
+  char ch;
+  vm_pop_s();
+  ch = read_byte();
+  if (ch != '\\')
+    /* Presently, the only special syntax is characters */
+    error("invalid syntax at byte 0x%.2X", ch);
+  vm_pop_s();
+  ch = read_byte();
+  if (ch == 'x') {
+    char byte[3];
+    vm_pop_s();
+    byte[0] = read_byte();
+    vm_pop_s();
+    byte[1] = read_byte();
+    vm_pop_s();
+    byte[2] = 0;
+    errno = 0;
+    ch = (char) strtol(byte, NULL, 16);
+    if (errno != 0)
+      error("invalid escape \"\\x%s\"", byte);
+    vm_push_s(make_char(ch));
+  }
+  else
+    /* Do nothing. The one character we read is what we want to leave
+       on the stack */
+    ;
+}
+
 static void read_sexp() {
   char ch = read_byte();
   while (isspace(ch)) {
@@ -132,6 +164,8 @@ static void read_sexp() {
 
   if (ch == ';')
     read_comment();
+  else if (ch == '#')
+    read_special();
   else if (ch == '(')
     read_list();
   else if (ch == EOF)
