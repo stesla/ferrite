@@ -2,6 +2,10 @@
 #include "gc.h"
 #include "object.h"
 
+bool boolp(ref_t value) {
+  return truep(value) || falsep(value);
+}
+
 bool charp(ref_t value) {
   return (value & TAG_MASK) == TAG_CHAR;
 }
@@ -24,6 +28,14 @@ bool consp(ref_t value) {
 
 bool opcodep(ref_t value) {
   return (value & TAG_MASK) == TAG_OPCODE;
+}
+
+bool truep(ref_t value) {
+  return value == TRUE;
+}
+
+bool falsep(ref_t value) {
+  return value == FALSE;
 }
 
 ref_t car(ref_t c) {

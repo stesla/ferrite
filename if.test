@@ -1,0 +1,10 @@
+#!./fe
+
+NIL
+
+(LDC "1..2" LDC 1 PUT
+ LDC #\x0A LDC 1 PUT
+ LDC #t SEL (LDC "ok 1" JOIN) (LDC "not ok 1" JOIN) LDC 1 PUT
+ LDC #\x0A LDC 1 PUT
+ LDC #f SEL (LDC "not ok 2" JOIN) (LDC "ok 2" JOIN) LDC 1 PUT
+ LDC #\x0A LDC 1 PUT)

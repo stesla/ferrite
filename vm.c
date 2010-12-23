@@ -150,6 +150,10 @@ static const char *vm_opcode_name(ref_t value) {
 static void print(ref_t value) {
   if (nilp(value))
     printf("NIL");
+  else if(truep(value))
+    printf("#t");
+  else if(falsep(value))
+    printf("#f");
   else if(charp(value)) {
     char ch = CHAR(value);
     if (0x20 < ch && ch < 0x7F)
@@ -254,6 +258,24 @@ static void vm_div() {
   vm_push_s(make_fixnum(FIXNUM(x) / FIXNUM(y)));
 }
 
+static void vm_sel() {
+  ref_t cond;
+  cond = vm_pop_s();
+  if (!boolp(cond))
+    error("invalid condition for SEL");
+  vm_push_d(cdr(cdr(vm.c)));
+  if (cond == TRUE)
+    vm.c = vm_pop_c();
+  else {
+    vm_pop_c();
+    vm.c = vm_pop_c();
+  }
+}
+
+static void vm_join () {
+  vm.c = vm_pop_d();
+}
+
 ref_t vm_op(const char *name) {
   size_t i = 0;
   while (ops[i].token != NULL) {
@@ -273,6 +295,7 @@ void vm_do(ref_t opcode) {
   case OP_CONS: vm_cons(); break;
   case OP_DIV: vm_div(); break;
   case OP_GET: vm_get(); break;
+  case OP_JOIN: vm_join(); break;
   case OP_LD: vm_ld(); break;
   case OP_LDC: vm_ldc(); break;
   case OP_LDF: vm_ldf(); break;
@@ -282,15 +305,14 @@ void vm_do(ref_t opcode) {
   case OP_RCONS: vm_rcons(); break;
   case OP_RTN: vm_rtn(); break;
   case OP_SAVE: vm_save(); break;
+  case OP_SEL: vm_sel(); break;
   case OP_SUB: vm_sub(); break;
 
   case OP_ATOMP:
   case OP_CAR:
   case OP_CDR:
   case OP_EQ:
-  case OP_JOIN:
   case OP_READ:
-  case OP_SEL:
   default:
     error("unsupported opcode: 0x%.4lX", opcode);
   }

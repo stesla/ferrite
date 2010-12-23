@@ -156,6 +156,14 @@ static void read_special(int fd) {
     read_character(fd);
   else if (ch == '!')
     read_comment(fd);
+  else if (ch == 'f') {
+    vm_pop_s();
+    vm_push_s(FALSE);
+  }
+  else if (ch == 't') {
+    vm_pop_s();
+    vm_push_s(TRUE);
+  }
   else
     error("invalid syntax at byte 0x%.2X", ch);
 }
