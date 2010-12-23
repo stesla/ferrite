@@ -56,6 +56,24 @@ static void build_string(size_t size) {
   }
 }
 
+static void read_string_escape(int fd) {
+  char ch;
+  vm_pop_s();
+  ch = read_byte(fd);
+  vm_pop_s();
+  switch (ch) {
+  case 'f': ch = '\f'; break;
+  case 'n': ch = '\n'; break;
+  case 'r': ch = '\r'; break;
+  case 't': ch = '\t'; break;
+  case 'v': ch = '\v'; break;
+  case '"': break;
+  default:
+    error("invalid string escape");
+  }
+  vm_push_s(make_char(ch));
+}
+
 static void read_string(int fd) {
   char ch;
   size_t size = 0;
@@ -63,6 +81,8 @@ static void read_string(int fd) {
   ch = read_byte(fd);
   while (ch != '"') {
     ch = read_byte(fd);
+    if (ch == '\\')
+      read_string_escape(fd);
     size++;
   }
   build_string(size);
