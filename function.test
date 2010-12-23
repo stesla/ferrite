@@ -1,16 +1,11 @@
-#!/bin/sh
-
-echo "1..1"
-
-if [ "$(./fe - <<EOF
+#!./fe
 ;; Environment
-NIL
+((((LDC "ok 1\n" LDC 1 PUT RTN) . NIL)))
 
 ;; Code
-(NIL LDC 2 CONS LDC 3 CONS LDF (LD (1.2) LD (1.1) ADD RTN) AP PRINT)
-EOF
-)" == "5" ]; then
-    echo "ok 1"
-else
-    echo "not ok 1"
-fi
+(LDC "1..2\n" LDC 1 PUT
+ NIL LD (1.1) AP
+ NIL LDC 2 CONS LDF (LD (1.1) LDC 2 EQ SEL
+                        (LDC "ok 2\n" LDC 1 PUT JOIN)
+                        (LDC "not ok 2\n" LDC 1 PUT JOIN)
+                        RTN) AP)
