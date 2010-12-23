@@ -1,16 +1,7 @@
-#!/bin/sh
+#!./fe
 
-echo "1..1"
-
-if [ "$(./fe - <<EOF
-;; Environment
 ((6 7) (42))
 
-;; Code
-(NIL LD (2.1) CONS LD (1.2) CONS PRINT)
-EOF
-)" == "(7 42)" ]; then
-    echo "ok 1"
-else
-    echo "not ok 1"
-fi
+(LDC "1..2\n" LDC 1 PUT
+ LD (2.1) LDC 42 EQ SEL (LDC "ok 1\n" LDC 1 PUT JOIN) (LDC "not ok 1\n" LDC 1 PUT JOIN)
+ LD (1.2) LDC 7 EQ SEL (LDC "ok 2\n" LDC 1 PUT JOIN) (LDC "not ok 2\n" LDC 1 PUT JOIN))
