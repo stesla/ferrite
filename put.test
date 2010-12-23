@@ -1,28 +1,13 @@
 #!/bin/sh
 
-echo "1..1"
+echo "1..2"
 
-if [ "$(./fe - <<EOF
-;; Environment
+./fe - <<EOF
 NIL
-
-;; Code
-(LDC #\f LDC 1 PUT
- LDC #\o LDC 1 PUT
- LDC #\o LDC 1 PUT
+(LDC #\o LDC 1 PUT
+ LDC #\k LDC 1 PUT
  LDC #\  LDC 1 PUT
- LDC #\b LDC 1 PUT
- LDC #\a LDC 1 PUT
- LDC #\r LDC 1 PUT
+ LDC #\1 LDC 1 PUT
  LDC #\x0A LDC 1 PUT
- LDC #\b LDC 1 PUT
- LDC #\a LDC 1 PUT
- LDC #\z LDC 1 PUT
- LDC " quux" LDC 1 PUT)
+ LDC "ok 2" LDC 1 PUT)
 EOF
-)" == "foo bar
-baz quux" ]; then
-    echo "ok 1"
-else
-    echo "not ok 1"
-fi
