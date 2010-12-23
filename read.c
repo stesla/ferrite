@@ -124,13 +124,8 @@ static void check_eof_in_list() {
     error("end of file reached before end of list");
 }
 
-static void read_special(int fd) {
+static void read_character(int fd) {
   char ch;
-  vm_pop_s();
-  ch = read_byte(fd);
-  if (ch != '\\')
-    /* Presently, the only special syntax is characters */
-    error("invalid syntax at byte 0x%.2X", ch);
   vm_pop_s();
   ch = read_byte(fd);
   if (ch == 'x') {
@@ -151,6 +146,18 @@ static void read_special(int fd) {
     /* Do nothing. The one character we read is what we want to leave
        on the stack */
     ;
+}
+
+static void read_special(int fd) {
+  char ch;
+  vm_pop_s();
+  ch = read_byte(fd);
+  if (ch == '\\')
+    read_character(fd);
+  else if (ch == '!')
+    read_comment(fd);
+  else
+    error("invalid syntax at byte 0x%.2X", ch);
 }
 
 static void read_sexp(int fd) {
