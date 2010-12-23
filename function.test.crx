@@ -1,9 +1,0 @@
-;; Environment
-NIL
-
-;; Code
-(NIL LDC 2 CONS LDC 3 CONS LDF (LD (1.2) LD (1.1) ADD RTN) AP PRINT)
-
-RESULT
-
-5

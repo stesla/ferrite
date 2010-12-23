@@ -15,4 +15,4 @@ clean:
 	rm -rf *.o $(PROGRAM)
 
 test: $(PROGRAM)
-	./test.sh
+	prove *.test

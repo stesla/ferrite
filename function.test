@@ -1,0 +1,16 @@
+#!/bin/sh
+
+echo "1..1"
+
+if [ "$(./fe - <<EOF
+;; Environment
+NIL
+
+;; Code
+(NIL LDC 2 CONS LDC 3 CONS LDF (LD (1.2) LD (1.1) ADD RTN) AP PRINT)
+EOF
+)" == "5" ]; then
+    echo "ok 1"
+else
+    echo "not ok 1"
+fi
