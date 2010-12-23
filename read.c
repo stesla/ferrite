@@ -120,7 +120,7 @@ static void read_atom(int fd) {
   char ch = CHAR(car(vm.s));
   if (ch == '"')
     read_string(fd);
-  else if (isdigit(ch))
+  else if (isdigit(ch) || ch == '-')
     read_number(fd);
   else if (isalpha(ch))
     read_identifier(fd);

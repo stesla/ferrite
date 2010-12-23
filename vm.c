@@ -276,6 +276,14 @@ static void vm_join () {
   vm.c = vm_pop_d();
 }
 
+static void vm_eq () {
+  ref_t x = vm_pop_s(), y = vm_pop_s();
+  if (x == y)
+    vm_push_s(TRUE);
+  else
+    vm_push_s(FALSE);
+}
+
 ref_t vm_op(const char *name) {
   size_t i = 0;
   while (ops[i].token != NULL) {
@@ -294,6 +302,7 @@ void vm_do(ref_t opcode) {
   case OP_AP: vm_ap(); break;
   case OP_CONS: vm_cons(); break;
   case OP_DIV: vm_div(); break;
+  case OP_EQ: vm_eq(); break;
   case OP_GET: vm_get(); break;
   case OP_JOIN: vm_join(); break;
   case OP_LD: vm_ld(); break;
@@ -311,7 +320,6 @@ void vm_do(ref_t opcode) {
   case OP_ATOMP:
   case OP_CAR:
   case OP_CDR:
-  case OP_EQ:
   case OP_READ:
   default:
     error("unsupported opcode: 0x%.4lX", opcode);
