@@ -1,0 +1,31 @@
+#!./fe
+
+NIL
+
+(LDC "1..6\n" LDC 1 PUT
+
+ DUM NIL
+
+ ;; ODDP
+ LDF (LD (1.1) LDC 0 EQ SEL
+         (LDC #f JOIN)
+         (NIL LDC 1 LD (1.1) SUB CONS LD (2.1) AP JOIN) RTN) CONS
+
+ ;; EVENP
+ LDF (LD (1.1) LDC 0 EQ SEL
+         (LDC #t JOIN)
+         (NIL LDC 1 LD (1.1) SUB CONS LD (2.2) AP JOIN) RTN) CONS
+
+ LDF (NIL LDC 0 CONS LD (2.1) AP
+          SEL (JOIN) (LDC "not " LDC 1 PUT JOIN) LDC "ok 1\n" LDC 1 PUT
+      NIL LDC 0 CONS LD (2.2) AP
+          SEL (LDC "not " LDC 1 PUT JOIN) (JOIN) LDC "ok 2\n" LDC 1 PUT
+      NIL LDC 6 CONS LD (2.1) AP
+          SEL (JOIN) (LDC "not " LDC 1 PUT JOIN) LDC "ok 3\n" LDC 1 PUT
+      NIL LDC 6 CONS LD (2.2) AP
+          SEL (LDC "not " LDC 1 PUT JOIN) (JOIN) LDC "ok 4\n" LDC 1 PUT
+      NIL LDC 7 CONS LD (2.1) AP
+          SEL (LDC "not " LDC 1 PUT JOIN) (JOIN) LDC "ok 5\n" LDC 1 PUT
+      NIL LDC 7 CONS LD (2.2) AP
+          SEL (JOIN) (LDC "not " LDC 1 PUT JOIN) LDC "ok 6\n" LDC 1 PUT
+      RTN) RAP)

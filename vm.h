@@ -45,9 +45,11 @@ typedef enum {
   OP_SAVE = 0x1412,
   OP_AP = 0x1512,
   OP_RTN = 0x1612,
+  OP_DUM = 0x1712,
+  OP_RAP = 0x1812,
 
   /* misc */
-  OP_POP = 0x1712
+  OP_POP = 0x1912
 } op_code;
 
 ref_t vm_pop_c();

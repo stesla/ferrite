@@ -31,6 +31,7 @@ ref_t vm_pop_d() { return vm_pop(&vm.d); }
 ref_t vm_pop_s() { return vm_pop(&vm.s); }
 void vm_push_c(ref_t ref) { vm_push(&vm.c, ref); }
 void vm_push_d(ref_t ref) { vm_push(&vm.d, ref); }
+static void vm_push_e(ref_t ref) { vm_push(&vm.e, ref); }
 void vm_push_s(ref_t ref) { vm_push(&vm.s, ref); }
 
 static void vm_save() {
@@ -132,6 +133,8 @@ static struct {
   {"JOIN", OP_JOIN},
   {"AP", OP_AP},
   {"RTN", OP_RTN},
+  {"DUM", OP_DUM},
+  {"RAP", OP_RAP},
   {"POP", OP_POP},
   {"NIL", NIL},
   {NULL, 0}
@@ -285,6 +288,24 @@ static void vm_eq () {
     vm_push_s(FALSE);
 }
 
+static void vm_dum () {
+  /* TODO: push PENDING value */
+  vm_push_e(NIL);
+}
+
+static void vm_rap () {
+  /* TODO: check for PENDING value in caar(vm.e) */
+  vm_push_d(vm.c);
+  vm_push_d(cdr(vm.e));
+  vm_push_d(cdr(cdr(vm.s)));
+  CONS(vm.e)->car = car(cdr(vm.s));
+  vm.e = make_cons();
+  CONS(vm.e)->car = car(cdr(vm.s));
+  CONS(vm.e)->cdr = cdr(car(vm.s));
+  vm.c = car(car(vm.s));
+  vm.s = NIL;
+}
+
 ref_t vm_op(const char *name) {
   size_t i = 0;
   while (ops[i].token != NULL) {
@@ -303,6 +324,7 @@ void vm_do(ref_t opcode) {
   case OP_AP: vm_ap(); break;
   case OP_CONS: vm_cons(); break;
   case OP_DIV: vm_div(); break;
+  case OP_DUM: vm_dum(); break;
   case OP_EQ: vm_eq(); break;
   case OP_GET: vm_get(); break;
   case OP_JOIN: vm_join(); break;
@@ -313,6 +335,7 @@ void vm_do(ref_t opcode) {
   case OP_POP: vm_pop_s(); break;
   case OP_PRINT: vm_print(); break;
   case OP_PUT: vm_put(); break;
+  case OP_RAP: vm_rap(); break;
   case OP_RCONS: vm_rcons(); break;
   case OP_RTN: vm_rtn(); break;
   case OP_SAVE: vm_save(); break;
