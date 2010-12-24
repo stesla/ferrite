@@ -143,7 +143,7 @@ static const char *vm_opcode_name(ref_t value) {
       return ops[i].token;
     i++;
   }
-  error("invalid op code");
+  error("invalid op code: %x", value);
   return NULL;
 }
 
@@ -291,7 +291,7 @@ ref_t vm_op(const char *name) {
       return ops[i].op;
     i++;
   }
-  error("invalid op code");
+  error("invalid op code: %s", name);
   return NIL;
 }
 

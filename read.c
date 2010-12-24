@@ -161,6 +161,23 @@ static void read_character(int fd) {
     if (errno != 0)
       error("invalid escape \"\\x%s\"", byte);
     vm_push_s(make_char(ch));
+  } else if (ch == 'e') {
+    vm_pop_s();
+    ch = read_byte(fd);
+    if(isspace(ch)) {
+      vm_push_s(make_char('e'));
+      return;
+    }
+    else if (ch == 'o') {
+      vm_pop_s();
+      ch = read_byte(fd);
+      if (ch == 'f') {
+        vm_pop_s();
+        vm_push_s(make_char(EOF));
+        return;
+      }
+    }
+    error("invalid character");
   }
   else
     /* Do nothing. The one character we read is what we want to leave

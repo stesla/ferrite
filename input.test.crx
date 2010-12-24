@@ -1,0 +1,9 @@
+NIL
+
+(LDC "1..3\n" LDC 1 PUT
+ LDC 0 GET LDC #\a EQ
+   SEL (LDC "ok 1\n" LDC 1 PUT JOIN) (LDC "not ok 1\n" LDC 1 PUT JOIN)
+ LDC 0 GET LDC #\x0A EQ
+   SEL (LDC "ok 2\n" LDC 1 PUT JOIN) (LDC "not ok 2\n" LDC 1 PUT JOIN)
+ LDC 0 GET LDC #\eof EQ
+   SEL (LDC "ok 3\n" LDC 1 PUT JOIN) (LDC "not ok 3n" LDC 1 PUT JOIN))
