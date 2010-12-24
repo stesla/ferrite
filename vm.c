@@ -132,6 +132,7 @@ static struct {
   {"JOIN", OP_JOIN},
   {"AP", OP_AP},
   {"RTN", OP_RTN},
+  {"POP", OP_POP},
   {"NIL", NIL},
   {NULL, 0}
 };
@@ -309,6 +310,7 @@ void vm_do(ref_t opcode) {
   case OP_LDC: vm_ldc(); break;
   case OP_LDF: vm_ldf(); break;
   case OP_MUL: vm_mul(); break;
+  case OP_POP: vm_pop_s(); break;
   case OP_PRINT: vm_print(); break;
   case OP_PUT: vm_put(); break;
   case OP_RCONS: vm_rcons(); break;

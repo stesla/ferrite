@@ -44,7 +44,10 @@ typedef enum {
   /* function application */
   OP_SAVE = 0x1412,
   OP_AP = 0x1512,
-  OP_RTN = 0x1612
+  OP_RTN = 0x1612,
+
+  /* misc */
+  OP_POP = 0x1712
 } op_code;
 
 ref_t vm_pop_c();
