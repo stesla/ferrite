@@ -90,12 +90,18 @@ with.
 **** x 0001 0010 - Op Code (see types.h)
 **** x 0010 0010 - ASCII character (next byte holds character)
 **** x 0011 0010 - non-parse-able values
-***** 0x32 - READ_BYTE (read.c)
+***** 0x0032 - READ_BYTE (read.c)
 This is used by the parser to indicate that the next value on the
 stack should be read as if it had come from the input. The parser
 pushes this onto the stack after its read an identifier or a number
 (because it only knows to stop reading those when it finds the first
-character that isn't one of those);
+character that isn't one of those).
+
+***** 0x0132 - PENDING (vm.c)
+When the VM sets up the environment for recursion with the DUM
+instruction, it pushes this value on to the environment stack in place
+of a lookup list. It is later replaced by the list of recursively
+available functions by the RAP instruction.
 
 **** 0010 - 0x02 - NIL
 **** 1010 - 0x0A - #f

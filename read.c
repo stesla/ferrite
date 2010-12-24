@@ -9,8 +9,6 @@
 #include "read.h"
 #include "vm.h"
 
-#define READ_BYTE 0x32
-
 static char read_byte(int fd) {
   if (car(vm.s) == READ_BYTE)
     vm_pop_s();

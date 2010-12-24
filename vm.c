@@ -293,12 +293,12 @@ static void vm_eq () {
 }
 
 static void vm_dum () {
-  /* TODO: push PENDING value */
-  vm_push_e(NIL);
+  vm_push_e(PENDING);
 }
 
 static void vm_rap () {
-  /* TODO: check for PENDING value in caar(vm.e) */
+  if (car(vm.e) != PENDING)
+    error("RAP called without first calling DUM");
   vm_push_d(vm.c);
   vm_push_d(cdr(vm.e));
   vm_push_d(cdr(cdr(vm.s)));
