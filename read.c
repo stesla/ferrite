@@ -153,9 +153,16 @@ static void read_character(int fd) {
     vm_pop_s();
     byte[0] = read_byte(fd);
     vm_pop_s();
+    if (isspace(byte[0])) {
+      vm_push_s(make_char('x'));
+      return;
+    }
     byte[1] = read_byte(fd);
     vm_pop_s();
     byte[2] = 0;
+    if (isspace(byte[0]))
+      error("invalid escape \"\\x%s\"", byte);
+
     errno = 0;
     ch = (char) strtol(byte, NULL, 16);
     if (errno != 0)
@@ -165,6 +172,7 @@ static void read_character(int fd) {
     vm_pop_s();
     ch = read_byte(fd);
     if(isspace(ch)) {
+      vm_pop_s();
       vm_push_s(make_char('e'));
       return;
     }
