@@ -3,9 +3,11 @@
 ((((LDC "ok 1\n" LDC 1 PUT RTN) . NIL)))
 
 ;; Code
-(LDC "1..2\n" LDC 1 PUT
+(LDC "1..3\n" LDC 1 PUT
  NIL LD (1.1) AP
+ LDC "ok 3\n" ;; push this on the stack before the function call
  NIL LDC 2 CONS LDF (LD (1.1) LDC 2 EQ SEL
-                        (LDC "ok 2\n" LDC 1 PUT JOIN)
-                        (LDC "not ok 2\n" LDC 1 PUT JOIN)
-                        RTN) AP)
+                        (JOIN) (LDC "not " LDC 1 PUT JOIN)
+                        LDC "ok 2\n" LDC 1 PUT
+                        RTN) AP
+ LDC 1 PUT)   ;; this should print the string we pushed above

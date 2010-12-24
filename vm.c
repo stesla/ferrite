@@ -10,6 +10,8 @@
 
 struct vm vm = {NIL, NIL, NIL, NIL};
 
+static void print(ref_t value);
+
 static ref_t vm_pop(ref_t *r) {
   ref_t result;
   if (*r == NIL)
@@ -225,7 +227,9 @@ static void vm_ld() {
 }
 
 static void vm_ap() {
-  vm_save();
+  vm_push_d(vm.c);
+  vm_push_d(vm.e);
+  vm_push_d(cdr(cdr(vm.s)));
   vm.e = make_cons();
   CONS(vm.e)->car = car(cdr(vm.s));
   CONS(vm.e)->cdr = cdr(car(vm.s));
