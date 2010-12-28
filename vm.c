@@ -166,45 +166,47 @@ static const char *vm_opcode_name(ref_t value) {
   return NULL;
 }
 
-static void print(ref_t value) {
+static void print(FILE *out, ref_t value) {
   if (nilp(value))
-    printf("NIL");
+    fprintf(out, "NIL");
   else if(truep(value))
-    printf("#t");
+    fprintf(out, "#t");
   else if(falsep(value))
-    printf("#f");
+    fprintf(out, "#f");
   else if(charp(value)) {
     char ch = CHAR(value);
     if (0x20 < ch && ch < 0x7F)
-      printf("#\\%c", ch);
+      fprintf(out, "#\\%c", ch);
     else
-      printf("#\\x%.2X", (int) ch);
+      fprintf(out, "#\\x%.2X", (int) ch);
   }
   else if(fixnump(value))
-    printf("%d", FIXNUM(value));
+    fprintf(out, "%d", FIXNUM(value));
   else if(stringp(value))
-    printf("\"%s\"", STRING(value)->bytes);
+    fprintf(out, "\"%s\"", STRING(value)->bytes);
   else if(opcodep(value))
-    printf("%s", vm_opcode_name(value));
+    fprintf(out, "%s", vm_opcode_name(value));
   else if(consp(value)) {
-    fputc('(', stdout);
+    fputc('(', out);
     while (consp(value)) {
-      print(car(value));
+      print(out, car(value));
       value = cdr(value);
       if (!nilp(value))
-        fputc(' ', stdout);
+        fputc(' ', out);
     }
     if (!nilp(value)) {
-      printf(". ");
-      print(value);
+      fprintf(out, ". ");
+      print(out, value);
     }
-    fputc(')', stdout);
+    fputc(')', out);
   }
 }
 
 static void vm_print() {
+  int fd = fixnum_to_int(vm_pop_s());
   ref_t value = vm_pop_s();
-  print(value);
+  FILE *out = fdopen(fd, "w");
+  print(out, value);
 }
 
 static void vm_read() {
