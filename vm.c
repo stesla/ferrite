@@ -6,12 +6,11 @@
 #include <unistd.h>
 #include "error.h"
 #include "gc.h"
+#include "read.h"
 #include "vm.h"
 #include "object.h"
 
 struct vm vm = {NIL, NIL, NIL, NIL};
-
-static void print(ref_t value);
 
 static ref_t vm_pop(ref_t *r) {
   ref_t result;
@@ -208,6 +207,11 @@ static void vm_print() {
   print(value);
 }
 
+static void vm_read() {
+  int fd = fixnum_to_int(vm_pop_s());
+  fe_read(fd);
+}
+
 static void vm_rtn() {
   if (nilp(vm.s))
     vm.s = vm_pop_d();
@@ -381,13 +385,12 @@ void vm_do(ref_t opcode) {
   case OP_PRINT: vm_print(); break;
   case OP_PUT: vm_put(); break;
   case OP_RAP: vm_rap(); break;
+  case OP_READ: vm_read(); break;
   case OP_RCONS: vm_rcons(); break;
   case OP_RTN: vm_rtn(); break;
   case OP_SAVE: vm_save(); break;
   case OP_SEL: vm_sel(); break;
   case OP_SUB: vm_sub(); break;
-
-  case OP_READ:
   default:
     error("unsupported opcode: 0x%.4lX", opcode);
   }
