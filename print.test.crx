@@ -1,0 +1,2 @@
+NIL
+(LDC ("hello" 5 #t #\a NIL ADD (6 . 7)) PRINT)

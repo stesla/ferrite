@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "1..2"
+echo "1..3"
 
 ./fe - <<EOF
 NIL
@@ -9,5 +9,11 @@ NIL
  LDC #\  LDC 1 PUT
  LDC #\1 LDC 1 PUT
  LDC #\x0A LDC 1 PUT
- LDC "ok 2" LDC 1 PUT)
+ LDC "ok 2\n" LDC 1 PUT)
 EOF
+
+if [ "$(./fe print.test.crx)" == '("hello" 5 #t #\a NIL ADD (6 . 7))' ]; then
+    echo 'ok 3'
+else
+    echo 'not ok 3'
+fi
