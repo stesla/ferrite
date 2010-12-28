@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,40 +43,53 @@ static void vm_save() {
   vm_push_d(vm.s);
 }
 
+static char vm_read_byte(int fd) {
+  char ch;
+  ssize_t len = read(fd, &ch, 1);
+  if (len < 0) {
+    switch (errno) {
+    case EAGAIN: /* EWOULDBLOCK */
+    case EINTR:
+      return vm_read_byte(fd);
+    default:
+      error("GET: %s", strerror(errno));
+    }
+  } else if (len == 0)
+    ch = EOF;
+  return ch;
+}
+
 static void vm_get() {
   ref_t f = vm_pop_s();
   int fd = fixnum_to_int(f);
-  char ch;
-  switch (read(fd, &ch, 1)) {
-  case 1:
-    vm_push_s(make_char(ch));
-    break;
-  case 0:
-    vm_push_s(make_char(EOF));
-    break;
-  default:
-    perror("vm_get");
-    exit(1);
+  char ch = vm_read_byte(fd);
+  vm_push_s(make_char(ch));
+}
+
+static void vm_write_bytes(int fd, const char *bytes, size_t len) {
+  ssize_t written = write(fd, bytes, len);
+  if (written < 0) {
+    switch (errno) {
+    case EAGAIN: /* EWOULDBLOCK */
+    case EINTR:
+      vm_write_bytes(fd, bytes, len);
+      break;
+    default:
+      error("PUT: %s", strerror(errno));
+    }
+  } else if (written < len) {
+    vm_write_bytes(fd, bytes + written, len - written);
   }
 }
 
 static void vm_put() {
-  ref_t f = vm_pop_s();
-  int fd = fixnum_to_int(f);
+  int fd = fixnum_to_int(vm_pop_s());
   ref_t value = vm_pop_s();
   if (charp(value)) {
     char ch = CHAR(value);
-    /* TODO: decide on error conditions */
-    if (write(fd, &ch, 1) != 1)
-      error("error in PUT");
-  }
-  else if (stringp(value)) {
-    const char *str = STRING(value)->bytes;
-    size_t len = strlen(str);
-    /* TODO: decide on error conditions */
-    if (write(fd, str, len) != len)
-      error("error in PUT");
-  }
+    vm_write_bytes(fd, &ch, 1);
+  } else if (stringp(value))
+    vm_write_bytes(fd, STRING(value)->bytes, strlen(STRING(value)->bytes));
   else
     error("invalid argument to PUT");
 }
