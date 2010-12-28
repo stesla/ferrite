@@ -324,6 +324,30 @@ static void vm_rap () {
   vm.s = NIL;
 }
 
+static void vm_car() {
+  ref_t value = car(vm.s);
+  if (nilp(value))
+    return;
+  else if (consp(value))
+    CONS(vm.s)->car = car(car(vm.s));
+  else
+    error("CAR must be called with a list");
+}
+
+static void vm_cdr() {
+  ref_t value = car(vm.s);
+  if (nilp(value))
+    return;
+  else if (consp(value))
+    CONS(vm.s)->car = cdr(car(vm.s));
+  else
+    error("CDR must be called with a list");
+}
+
+static void vm_atomp() {
+  CONS(vm.s)->car = consp(car(vm.s)) ? FALSE : TRUE;
+}
+
 ref_t vm_op(const char *name) {
   size_t i = 0;
   while (ops[i].token != NULL) {
@@ -340,6 +364,9 @@ void vm_do(ref_t opcode) {
   case NIL: vm_nil(); break;
   case OP_ADD: vm_add(); break;
   case OP_AP: vm_ap(); break;
+  case OP_ATOMP: vm_atomp(); break;
+  case OP_CAR: vm_car(); break;
+  case OP_CDR: vm_cdr(); break;
   case OP_CONS: vm_cons(); break;
   case OP_DIV: vm_div(); break;
   case OP_DUM: vm_dum(); break;
@@ -360,9 +387,6 @@ void vm_do(ref_t opcode) {
   case OP_SEL: vm_sel(); break;
   case OP_SUB: vm_sub(); break;
 
-  case OP_ATOMP:
-  case OP_CAR:
-  case OP_CDR:
   case OP_READ:
   default:
     error("unsupported opcode: 0x%.4lX", opcode);
